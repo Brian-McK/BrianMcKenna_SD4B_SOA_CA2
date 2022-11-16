@@ -1,5 +1,5 @@
+using BrianMcKenna_SD4B_SOA_CA2.Models;
 using Microsoft.EntityFrameworkCore;
-using TodoApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,8 +13,9 @@ var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseDeveloperExceptionPage();
+    // app.UseSwagger();
+    // app.UseSwaggerUI();
 }
 
 app.UseHttpsRedirection();

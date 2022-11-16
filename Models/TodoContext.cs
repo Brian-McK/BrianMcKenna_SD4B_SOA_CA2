@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
-namespace TodoApi.Models;
+namespace BrianMcKenna_SD4B_SOA_CA2.Models;
 
 public class TodoContext : DbContext
 {
