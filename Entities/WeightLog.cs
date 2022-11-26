@@ -8,9 +8,7 @@ public class WeightLog
     [Key]
     public Guid Id { get; set; }
     
-    [Key]
     [ForeignKey("Boxer")]
-    [Column(Order=1)]
     public Guid BoxerId { get; set; }
     
     [Required]
@@ -22,7 +20,6 @@ public class WeightLog
     
     [Required]
     [ForeignKey("Trainer")]
-    [Column(Order=3)]
     public Guid VerifiedByTrainerId { get; set; }
     
 }

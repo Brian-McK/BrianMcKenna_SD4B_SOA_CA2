@@ -6,7 +6,6 @@ namespace BrianMcKenna_SD4B_SOA_CA2.Entities;
 public class Boxer
 {
     [Key]
-    [Column(Order=1)]
     public Guid Id { get; set; }
     
     [Required]
