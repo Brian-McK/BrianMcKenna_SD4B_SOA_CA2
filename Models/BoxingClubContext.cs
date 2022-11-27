@@ -10,6 +10,13 @@ public class BoxingClubContext : DbContext
     {
     }
     
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<WeightLog>()
+            .Property(b => b.WeighDateTime)
+            .HasDefaultValueSql("getdate()");
+    }
+
     public DbSet<Boxer>? Boxers { get; set; }
     public DbSet<Trainer>? Trainers { get; set; }
     public DbSet<WeightLog>? WeightLogs { get; set; }

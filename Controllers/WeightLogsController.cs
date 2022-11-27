@@ -52,7 +52,7 @@ namespace BrianMcKenna_SD4B_SOA_CA2.Controllers
 
         // PUT: api/WeightLogs/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutWeightLog(Guid id, WeightLog weightLog)
+        public async Task<IActionResult> UpdateWeightLog(Guid id, WeightLog weightLog)
         {
             if (id != weightLog.Id)
             {
@@ -88,10 +88,24 @@ namespace BrianMcKenna_SD4B_SOA_CA2.Controllers
           {
               return Problem("Entity set 'BoxingClubContext.WeightLogs'  is null.");
           }
-          _context.WeightLogs.Add(weightLog);
-            await _context.SaveChangesAsync();
 
-            return CreatedAtAction(nameof(GetWeightLog), new { id = weightLog.Id }, weightLog);
+          // if boxer id doesnt exist
+          if (!(_context.Boxers != null && _context.Boxers.Any(boxer => boxer.Id == weightLog.BoxerId)))
+          {
+              return NotFound();
+          }
+          
+          // if trainer id doesnt exist
+          if (!(_context.Trainers != null && _context.Trainers.Any(boxer => boxer.Id == weightLog.VerifiedByTrainerId)))
+          {
+              return NotFound();
+          }
+          
+          _context.WeightLogs.Add(weightLog);
+          
+          await _context.SaveChangesAsync();
+
+          return CreatedAtAction(nameof(GetWeightLog), new { id = weightLog.Id }, weightLog);
         }
 
         // DELETE: api/WeightLogs/5

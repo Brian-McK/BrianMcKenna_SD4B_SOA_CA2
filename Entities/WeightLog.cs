@@ -17,7 +17,6 @@ public class WeightLog
     [Precision(18,2)]
     public decimal Weight { get; set; }
     
-    [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
     public DateTime WeighDateTime { get; set; }
     
     [ForeignKey("Trainer")]

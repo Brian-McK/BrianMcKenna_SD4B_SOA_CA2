@@ -52,7 +52,7 @@ namespace BrianMcKenna_SD4B_SOA_CA2.Controllers
 
         // PUT: api/Trainers/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutTrainer(Guid id, Trainer trainer)
+        public async Task<IActionResult> UpdateTrainer(Guid id, Trainer trainer)
         {
             if (id != trainer.Id)
             {
