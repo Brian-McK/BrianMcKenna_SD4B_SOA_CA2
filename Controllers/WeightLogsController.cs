@@ -29,7 +29,7 @@ namespace BrianMcKenna_SD4B_SOA_CA2.Controllers
           {
               return NotFound();
           }
-            return await _context.WeightLogs.ToListAsync();
+          return await _context.WeightLogs.ToListAsync();
         }
 
         // GET: api/WeightLogs/5
@@ -40,7 +40,7 @@ namespace BrianMcKenna_SD4B_SOA_CA2.Controllers
           {
               return NotFound();
           }
-            var weightLog = await _context.WeightLogs.FindAsync(id);
+          var weightLog = await _context.WeightLogs.FindAsync(id);
 
             if (weightLog == null)
             {
@@ -51,7 +51,6 @@ namespace BrianMcKenna_SD4B_SOA_CA2.Controllers
         }
 
         // PUT: api/WeightLogs/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
         public async Task<IActionResult> PutWeightLog(Guid id, WeightLog weightLog)
         {
@@ -82,7 +81,6 @@ namespace BrianMcKenna_SD4B_SOA_CA2.Controllers
         }
 
         // POST: api/WeightLogs
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
         public async Task<ActionResult<WeightLog>> PostWeightLog(WeightLog weightLog)
         {
@@ -90,10 +88,10 @@ namespace BrianMcKenna_SD4B_SOA_CA2.Controllers
           {
               return Problem("Entity set 'BoxingClubContext.WeightLogs'  is null.");
           }
-            _context.WeightLogs.Add(weightLog);
+          _context.WeightLogs.Add(weightLog);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetWeightLog", new { id = weightLog.Id }, weightLog);
+            return CreatedAtAction(nameof(GetWeightLog), new { id = weightLog.Id }, weightLog);
         }
 
         // DELETE: api/WeightLogs/5

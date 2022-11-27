@@ -51,9 +51,8 @@ namespace BrianMcKenna_SD4B_SOA_CA2.Controllers
         }
 
         // PUT: api/Boxers/5
-        // To protect from over posting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutBoxer(Guid id, Boxer boxer)
+        public async Task<IActionResult> UpdateBoxer(Guid id, Boxer boxer)
         {
             if (id != boxer.Id)
             {
@@ -82,7 +81,6 @@ namespace BrianMcKenna_SD4B_SOA_CA2.Controllers
         }
 
         // POST: api/Boxers
-        // To protect from over posting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
         public async Task<ActionResult<Boxer>> PostBoxer(Boxer boxer)
         {
@@ -93,7 +91,7 @@ namespace BrianMcKenna_SD4B_SOA_CA2.Controllers
           _context.Boxers.Add(boxer);
           await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetBoxer", new { id = boxer.Id }, boxer);
+            return CreatedAtAction(nameof(GetBoxer), new { id = boxer.Id }, boxer);
         }
 
         // DELETE: api/Boxers/5

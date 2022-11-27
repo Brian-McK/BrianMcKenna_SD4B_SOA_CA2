@@ -51,7 +51,6 @@ namespace BrianMcKenna_SD4B_SOA_CA2.Controllers
         }
 
         // PUT: api/Trainers/5
-        // To protect from over posting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
         public async Task<IActionResult> PutTrainer(Guid id, Trainer trainer)
         {
@@ -82,7 +81,6 @@ namespace BrianMcKenna_SD4B_SOA_CA2.Controllers
         }
 
         // POST: api/Trainers
-        // To protect from over posting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
         public async Task<ActionResult<Trainer>> PostTrainer(Trainer trainer)
         {
@@ -93,7 +91,7 @@ namespace BrianMcKenna_SD4B_SOA_CA2.Controllers
           _context.Trainers.Add(trainer);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetTrainer", new { id = trainer.Id }, trainer);
+            return CreatedAtAction(nameof(GetTrainer), new { id = trainer.Id }, trainer);
         }
 
         // DELETE: api/Trainers/5

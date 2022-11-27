@@ -1,11 +1,13 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using BrianMcKenna_SD4B_SOA_CA2.Models;
 
 namespace BrianMcKenna_SD4B_SOA_CA2.Entities;
 
 public class Boxer
 {
     [Key]
+    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public Guid Id { get; set; }
     
     [Required]
@@ -19,7 +21,4 @@ public class Boxer
     [Required]
     public DateTime DateOfBirth { get; set; }
     
-    [Required]
-    [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
-    public DateTime CreatedAt { get; set; }
 }
