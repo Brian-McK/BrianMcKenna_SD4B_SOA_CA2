@@ -4,44 +4,44 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BrianMcKenna_SD4B_SOA_CA2.Services;
 
-
-public class BoxerRepository: IBoxerRepository, IDisposable
+public class TrainerRepository: ITrainerRepository, IDisposable
 {
     private readonly BoxingClubContext _boxingClubContext;
 
-    public BoxerRepository(BoxingClubContext context)
+    public TrainerRepository(BoxingClubContext context)
     {
         _boxingClubContext = context;
     }
     
-    public async Task<IEnumerable<Boxer>> GetAllBoxersAsync()
+    public async Task<IEnumerable<Trainer>> GetAllTrainersAsync()
     {
-        return await _boxingClubContext.Boxers.ToListAsync();
+        return await _boxingClubContext.Trainers.ToListAsync();
     }
     
-    public async Task<Boxer> GetBoxerByIdAsync(Guid id)
+    public async Task<Trainer> GetTrainerByIdAsync(Guid id)
     {
-        return await _boxingClubContext.Boxers.FindAsync(id);
+        return await _boxingClubContext.Trainers.FindAsync(id);
     }
     
-    public async Task InsertBoxerAsync(Boxer boxer)
+    public async Task InsertTrainerAsync(Trainer trainer)
     {
-        await _boxingClubContext.Boxers.AddAsync(boxer);
+        await _boxingClubContext.Trainers.AddAsync(trainer);
     }
     
-    public async Task DeleteBoxerAsync(Guid id)
+    public async Task DeleteTrainerAsync(Guid id)
     {
-        var boxer = await _boxingClubContext.Boxers.FindAsync(id);
+        var trainer = await _boxingClubContext.Trainers.FindAsync(id);
 
-        if (boxer != null) _boxingClubContext.Boxers.Remove(boxer);
+        if (trainer != null) _boxingClubContext.Trainers.Remove(trainer);
     }
     
-    public async Task UpdateBoxerAsync(Boxer boxer)
+    public async Task UpdateTrainerAsync(Trainer trainer)
     {
-        _boxingClubContext.Entry(boxer).State = EntityState.Modified;
+        _boxingClubContext.Entry(trainer).State = EntityState.Modified;
+        
         await _boxingClubContext.SaveChangesAsync();
     }
-    
+
     public async Task Save()
     {
         await _boxingClubContext.SaveChangesAsync();
