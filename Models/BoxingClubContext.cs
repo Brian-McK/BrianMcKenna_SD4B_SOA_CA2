@@ -17,7 +17,7 @@ public class BoxingClubContext : DbContext
             .HasDefaultValueSql("getdate()");
     }
 
-    public DbSet<Boxer>? Boxers { get; set; }
-    public DbSet<Trainer>? Trainers { get; set; }
-    public DbSet<WeightLog>? WeightLogs { get; set; }
+    public DbSet<Boxer> Boxers { get; set; }
+    public DbSet<Trainer> Trainers { get; set; }
+    public DbSet<WeightLog> WeightLogs { get; set; }
 }

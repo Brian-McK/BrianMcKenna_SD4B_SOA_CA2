@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using BrianMcKenna_SD4B_SOA_CA2.Entities;
 using BrianMcKenna_SD4B_SOA_CA2.Models;
+using BrianMcKenna_SD4B_SOA_CA2.Services;
 
 namespace BrianMcKenna_SD4B_SOA_CA2.Controllers
 {
@@ -14,33 +15,34 @@ namespace BrianMcKenna_SD4B_SOA_CA2.Controllers
     [ApiController]
     public class BoxersController : ControllerBase
     {
-        private readonly BoxingClubContext _context;
+        private readonly IBoxerRepository _boxerRepository;
 
-        public BoxersController(BoxingClubContext context)
+        public BoxersController(IBoxerRepository boxerRepository)
         {
-            _context = context;
+            _boxerRepository = boxerRepository;
         }
 
         // GET: api/Boxers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Boxer>>> GetBoxers()
         {
-          if (_context.Boxers == null)
-          {
-              return NotFound();
-          }
-          return await _context.Boxers.ToListAsync();
+            var result = await _boxerRepository.GetAllBoxersAsync();
+
+            var boxersList = result.ToList();
+            
+            if (!boxersList.Any())
+            {
+                return NotFound();
+            }
+
+            return boxersList;
         }
 
         // GET: api/Boxers/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Boxer>> GetBoxer(Guid id)
         {
-          if (_context.Boxers == null)
-          {
-              return NotFound();
-          }
-          var boxer = await _context.Boxers.FindAsync(id);
+            var boxer = await _boxerRepository.GetBoxerByIdAsync(id);
 
             if (boxer == null)
             {
@@ -59,23 +61,7 @@ namespace BrianMcKenna_SD4B_SOA_CA2.Controllers
                 return BadRequest();
             }
 
-            _context.Entry(boxer).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!BoxerExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+            await _boxerRepository.UpdateBoxerAsync(boxer);
 
             return NoContent();
         }
@@ -84,12 +70,7 @@ namespace BrianMcKenna_SD4B_SOA_CA2.Controllers
         [HttpPost]
         public async Task<ActionResult<Boxer>> PostBoxer(Boxer boxer)
         {
-          if (_context.Boxers == null)
-          {
-              return Problem("Entity set 'BoxingClubContext.Boxers'  is null.");
-          }
-          _context.Boxers.Add(boxer);
-          await _context.SaveChangesAsync();
+            await _boxerRepository.InsertBoxerAsync(boxer);
 
             return CreatedAtAction(nameof(GetBoxer), new { id = boxer.Id }, boxer);
         }
@@ -98,25 +79,9 @@ namespace BrianMcKenna_SD4B_SOA_CA2.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteBoxer(Guid id)
         {
-            if (_context.Boxers == null)
-            {
-                return NotFound();
-            }
-            var boxer = await _context.Boxers.FindAsync(id);
-            if (boxer == null)
-            {
-                return NotFound();
-            }
+            await _boxerRepository.DeleteBoxerAsync(id);
 
-            _context.Boxers.Remove(boxer);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
-        }
-
-        private bool BoxerExists(Guid id)
-        {
-            return (_context.Boxers?.Any(e => e.Id == id)).GetValueOrDefault();
+            return Accepted();
         }
     }
 }

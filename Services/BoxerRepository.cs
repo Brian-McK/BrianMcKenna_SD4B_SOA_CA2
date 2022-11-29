@@ -19,14 +19,18 @@ public class BoxerRepository: IBoxerRepository, IDisposable
         return await _boxingClubContext.Boxers.ToListAsync();
     }
     
-    public async Task<Boxer> GetBoxerByIdAsync(Guid id)
+    public async Task<Boxer?> GetBoxerByIdAsync(Guid id)
     {
-        return await _boxingClubContext.Boxers.FindAsync(id);
+        var boxer = await _boxingClubContext.Boxers.FindAsync(id);
+
+        return boxer;
     }
     
     public async Task InsertBoxerAsync(Boxer boxer)
     {
         await _boxingClubContext.Boxers.AddAsync(boxer);
+
+        await SaveAsync();
     }
     
     public async Task DeleteBoxerAsync(Guid id)
@@ -34,15 +38,28 @@ public class BoxerRepository: IBoxerRepository, IDisposable
         var boxer = await _boxingClubContext.Boxers.FindAsync(id);
 
         if (boxer != null) _boxingClubContext.Boxers.Remove(boxer);
+
+        await SaveAsync();
     }
     
     public async Task UpdateBoxerAsync(Boxer boxer)
     {
         _boxingClubContext.Entry(boxer).State = EntityState.Modified;
-        await _boxingClubContext.SaveChangesAsync();
+        
+        try
+        {
+            await _boxingClubContext.SaveChangesAsync();
+        }
+        catch (DbUpdateConcurrencyException exception)
+        {
+            if (!BoxerExists(boxer.Id))
+            {
+                throw new Exception(exception.Message);
+            }
+        }
     }
     
-    public async Task Save()
+    public async Task SaveAsync()
     {
         await _boxingClubContext.SaveChangesAsync();
     }
@@ -65,5 +82,10 @@ public class BoxerRepository: IBoxerRepository, IDisposable
     {
         await Dispose(true);
         GC.SuppressFinalize(this);
+    }
+    
+    private bool BoxerExists(Guid id)
+    {
+        return (_boxingClubContext.Boxers?.Any(e => e.Id == id)).GetValueOrDefault();
     }
 }
