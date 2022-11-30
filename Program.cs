@@ -6,9 +6,9 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 builder.Services.AddDbContext<BoxingClubContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("BoxingClubDatabase")));
-builder.Services.AddScoped<BoxerRepository>();
-builder.Services.AddScoped<TrainerRepository>();
-builder.Services.AddScoped<WeightLogRepository>();
+builder.Services.AddScoped<IBoxerRepository, BoxerRepository>();
+builder.Services.AddScoped<ITrainerRepository, TrainerRepository>();
+builder.Services.AddScoped<IWeightLogRepository, WeightLogRepository>();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddAutoMapper(typeof(Program).Assembly);
