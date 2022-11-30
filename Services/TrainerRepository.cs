@@ -17,15 +17,19 @@ public class TrainerRepository: ITrainerRepository, IDisposable
     {
         return await _boxingClubContext.Trainers.ToListAsync();
     }
-    
-    public async Task<Trainer> GetTrainerByIdAsync(Guid id)
+
+    public async Task<Trainer?> GetTrainerByIdAsync(Guid id)
     {
-        return await _boxingClubContext.Trainers.FindAsync(id);
+        var trainer = await _boxingClubContext.Trainers.FindAsync(id);
+
+        return trainer;
     }
     
     public async Task InsertTrainerAsync(Trainer trainer)
     {
         await _boxingClubContext.Trainers.AddAsync(trainer);
+
+        await SaveAsync();
     }
     
     public async Task DeleteTrainerAsync(Guid id)
@@ -39,17 +43,27 @@ public class TrainerRepository: ITrainerRepository, IDisposable
     {
         _boxingClubContext.Entry(trainer).State = EntityState.Modified;
         
-        await _boxingClubContext.SaveChangesAsync();
+        try
+        {
+            await _boxingClubContext.SaveChangesAsync();
+        }
+        catch (DbUpdateConcurrencyException exception)
+        {
+            if (!TrainerExists(trainer.Id))
+            {
+                throw new Exception(exception.Message);
+            }
+        }
     }
 
-    public async Task Save()
+    public async Task SaveAsync()
     {
         await _boxingClubContext.SaveChangesAsync();
     }
 
     private bool _disposed = false;
     
-    protected virtual async Task Dispose(bool disposing)
+    private async Task Dispose(bool disposing)
     {
         if (!_disposed)
         {
@@ -65,5 +79,10 @@ public class TrainerRepository: ITrainerRepository, IDisposable
     {
         await Dispose(true);
         GC.SuppressFinalize(this);
+    }
+    
+    private bool TrainerExists(Guid id)
+    {
+        return (_boxingClubContext.Trainers?.Any(e => e.Id == id)).GetValueOrDefault();
     }
 }

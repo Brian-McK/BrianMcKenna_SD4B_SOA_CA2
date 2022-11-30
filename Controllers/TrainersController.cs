@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using BrianMcKenna_SD4B_SOA_CA2.Entities;
 using BrianMcKenna_SD4B_SOA_CA2.Models;
+using BrianMcKenna_SD4B_SOA_CA2.Services;
 
 namespace BrianMcKenna_SD4B_SOA_CA2.Controllers
 {
@@ -14,39 +15,40 @@ namespace BrianMcKenna_SD4B_SOA_CA2.Controllers
     [ApiController]
     public class TrainersController : ControllerBase
     {
-        private readonly BoxingClubContext _context;
+        private readonly ITrainerRepository _trainerRepository;
 
-        public TrainersController(BoxingClubContext context)
+        public TrainersController(ITrainerRepository trainerRepository)
         {
-            _context = context;
+            _trainerRepository = trainerRepository;
         }
 
         // GET: api/Trainers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Trainer>>> GetTrainers()
-        {
-          if (_context.Trainers == null)
-          {
-              return NotFound();
-          }
-          return await _context.Trainers.ToListAsync();
+        { 
+            var result = await _trainerRepository.GetAllTrainersAsync();
+
+            var trainersList = result.ToList();
+            
+            if (!trainersList.Any())
+            {
+                return NotFound();
+            }
+
+            return trainersList;
         }
 
         // GET: api/Trainers/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Trainer>> GetTrainer(Guid id)
         {
-          if (_context.Trainers == null)
-          {
-              return NotFound();
-          }
-          var trainer = await _context.Trainers.FindAsync(id);
+            var trainer = await _trainerRepository.GetTrainerByIdAsync(id);
 
             if (trainer == null)
             {
                 return NotFound();
             }
-
+            
             return trainer;
         }
 
@@ -59,23 +61,7 @@ namespace BrianMcKenna_SD4B_SOA_CA2.Controllers
                 return BadRequest();
             }
 
-            _context.Entry(trainer).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!TrainerExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+            await _trainerRepository.UpdateTrainerAsync(trainer);
 
             return NoContent();
         }
@@ -84,12 +70,7 @@ namespace BrianMcKenna_SD4B_SOA_CA2.Controllers
         [HttpPost]
         public async Task<ActionResult<Trainer>> PostTrainer(Trainer trainer)
         {
-          if (_context.Trainers == null)
-          {
-              return Problem("Entity set 'BoxingClubContext.Trainers'  is null.");
-          }
-          _context.Trainers.Add(trainer);
-            await _context.SaveChangesAsync();
+            await _trainerRepository.InsertTrainerAsync(trainer);
 
             return CreatedAtAction(nameof(GetTrainer), new { id = trainer.Id }, trainer);
         }
@@ -98,25 +79,9 @@ namespace BrianMcKenna_SD4B_SOA_CA2.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteTrainer(Guid id)
         {
-            if (_context.Trainers == null)
-            {
-                return NotFound();
-            }
-            var trainer = await _context.Trainers.FindAsync(id);
-            if (trainer == null)
-            {
-                return NotFound();
-            }
+            await _trainerRepository.DeleteTrainerAsync(id);
 
-            _context.Trainers.Remove(trainer);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
-        }
-
-        private bool TrainerExists(Guid id)
-        {
-            return (_context.Trainers?.Any(e => e.Id == id)).GetValueOrDefault();
+            return Accepted();
         }
     }
 }

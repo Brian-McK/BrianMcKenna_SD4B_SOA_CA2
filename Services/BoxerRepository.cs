@@ -66,7 +66,7 @@ public class BoxerRepository: IBoxerRepository, IDisposable
 
     private bool _disposed = false;
     
-    protected virtual async Task Dispose(bool disposing)
+    private async Task Dispose(bool disposing)
     {
         if (!_disposed)
         {
