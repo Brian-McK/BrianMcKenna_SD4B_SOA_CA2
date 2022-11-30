@@ -45,7 +45,7 @@ public class TrainerRepository: ITrainerRepository, IDisposable
         
         try
         {
-            await _boxingClubContext.SaveChangesAsync();
+            await SaveAsync();
         }
         catch (DbUpdateConcurrencyException exception)
         {
@@ -81,7 +81,7 @@ public class TrainerRepository: ITrainerRepository, IDisposable
         GC.SuppressFinalize(this);
     }
     
-    private bool TrainerExists(Guid id)
+    public bool TrainerExists(Guid id)
     {
         return (_boxingClubContext.Trainers?.Any(e => e.Id == id)).GetValueOrDefault();
     }

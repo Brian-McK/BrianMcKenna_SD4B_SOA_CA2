@@ -48,7 +48,7 @@ public class BoxerRepository: IBoxerRepository, IDisposable
         
         try
         {
-            await _boxingClubContext.SaveChangesAsync();
+            await SaveAsync();
         }
         catch (DbUpdateConcurrencyException exception)
         {

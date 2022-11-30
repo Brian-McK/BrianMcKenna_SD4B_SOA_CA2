@@ -18,14 +18,18 @@ public class WeightLogRepository: IWeightLogRepository, IDisposable
         return await _boxingClubContext.WeightLogs.ToListAsync();
     }
     
-    public async Task<WeightLog> GetWeightLogByIdAsync(Guid id)
+    public async Task<WeightLog?> GetWeightLogByIdAsync(Guid id)
     {
-        return await _boxingClubContext.WeightLogs.FindAsync(id);
+        var weightLog = await _boxingClubContext.WeightLogs.FindAsync(id);
+
+        return weightLog;
     }
     
     public async Task InsertWeightLogAsync(WeightLog weightLog)
     {
         await _boxingClubContext.WeightLogs.AddAsync(weightLog);
+
+        await SaveAsync();
     }
     
     public async Task DeleteWeightLogAsync(Guid id)
@@ -39,17 +43,27 @@ public class WeightLogRepository: IWeightLogRepository, IDisposable
     {
         _boxingClubContext.Entry(weightLog).State = EntityState.Modified;
         
-        await _boxingClubContext.SaveChangesAsync();
+        try
+        {
+            await SaveAsync();
+        }
+        catch (DbUpdateConcurrencyException exception)
+        {
+            if (!WeightLogExists(weightLog.Id))
+            {
+                throw new Exception(exception.Message);
+            }
+        }
     }
 
-    public async Task Save()
+    private async Task SaveAsync()
     {
         await _boxingClubContext.SaveChangesAsync();
     }
 
     private bool _disposed = false;
     
-    protected virtual async Task Dispose(bool disposing)
+    private async Task Dispose(bool disposing)
     {
         if (!_disposed)
         {
@@ -65,5 +79,10 @@ public class WeightLogRepository: IWeightLogRepository, IDisposable
     {
         await Dispose(true);
         GC.SuppressFinalize(this);
+    }
+    
+    public bool WeightLogExists(Guid id)
+    {
+        return (_boxingClubContext.WeightLogs?.Any(e => e.Id == id)).GetValueOrDefault();
     }
 }

@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using BrianMcKenna_SD4B_SOA_CA2.Entities;
 using BrianMcKenna_SD4B_SOA_CA2.Models;
+using BrianMcKenna_SD4B_SOA_CA2.Services;
 
 namespace BrianMcKenna_SD4B_SOA_CA2.Controllers
 {
@@ -14,39 +15,44 @@ namespace BrianMcKenna_SD4B_SOA_CA2.Controllers
     [ApiController]
     public class WeightLogsController : ControllerBase
     {
-        private readonly BoxingClubContext _context;
+        private readonly IWeightLogRepository _weightLogRepository;
+        
+        private readonly ITrainerRepository _trainerRepository;
 
-        public WeightLogsController(BoxingClubContext context)
+        public WeightLogsController(IWeightLogRepository weightLogRepository, ITrainerRepository trainerRepository)
         {
-            _context = context;
+            _weightLogRepository = weightLogRepository;
+
+            _trainerRepository = trainerRepository;
         }
 
         // GET: api/WeightLogs
         [HttpGet]
         public async Task<ActionResult<IEnumerable<WeightLog>>> GetWeightLogs()
         {
-          if (_context.WeightLogs == null)
-          {
-              return NotFound();
-          }
-          return await _context.WeightLogs.ToListAsync();
+            var result = await _weightLogRepository.GetAllWeightLogsAsync();
+
+            var weightLogList = result.ToList();
+            
+            if (!weightLogList.Any())
+            {
+                return NotFound();
+            }
+            
+            return weightLogList;
         }
 
         // GET: api/WeightLogs/5
         [HttpGet("{id}")]
         public async Task<ActionResult<WeightLog>> GetWeightLog(Guid id)
         {
-          if (_context.WeightLogs == null)
-          {
-              return NotFound();
-          }
-          var weightLog = await _context.WeightLogs.FindAsync(id);
+            var weightLog = await _weightLogRepository.GetWeightLogByIdAsync(id);
 
             if (weightLog == null)
             {
                 return NotFound();
             }
-
+            
             return weightLog;
         }
 
@@ -59,23 +65,7 @@ namespace BrianMcKenna_SD4B_SOA_CA2.Controllers
                 return BadRequest();
             }
 
-            _context.Entry(weightLog).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!WeightLogExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+            await _weightLogRepository.UpdateWeightLogAsync(weightLog);
 
             return NoContent();
         }
@@ -84,53 +74,23 @@ namespace BrianMcKenna_SD4B_SOA_CA2.Controllers
         [HttpPost]
         public async Task<ActionResult<WeightLog>> PostWeightLog(WeightLog weightLog)
         {
-          if (_context.WeightLogs == null)
-          {
-              return Problem("Entity set 'BoxingClubContext.WeightLogs'  is null.");
-          }
+            if ((!_weightLogRepository.WeightLogExists(weightLog.Id)) || (!_trainerRepository.TrainerExists(weightLog.VerifiedByTrainerId)))
+            {
+                return NotFound();
+            }
+            
+            await _weightLogRepository.InsertWeightLogAsync(weightLog);
 
-          // if boxer id doesnt exist
-          if (!(_context.Boxers != null && _context.Boxers.Any(boxer => boxer.Id == weightLog.BoxerId)))
-          {
-              return NotFound();
-          }
-          
-          // if trainer id doesnt exist
-          if (!(_context.Trainers != null && _context.Trainers.Any(boxer => boxer.Id == weightLog.VerifiedByTrainerId)))
-          {
-              return NotFound();
-          }
-          
-          _context.WeightLogs.Add(weightLog);
-          
-          await _context.SaveChangesAsync();
-
-          return CreatedAtAction(nameof(GetWeightLog), new { id = weightLog.Id }, weightLog);
+            return CreatedAtAction(nameof(GetWeightLog), new { id = weightLog.Id }, weightLog);
         }
 
         // DELETE: api/WeightLogs/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteWeightLog(Guid id)
         {
-            if (_context.WeightLogs == null)
-            {
-                return NotFound();
-            }
-            var weightLog = await _context.WeightLogs.FindAsync(id);
-            if (weightLog == null)
-            {
-                return NotFound();
-            }
+            await _weightLogRepository.DeleteWeightLogAsync(id);
 
-            _context.WeightLogs.Remove(weightLog);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
-        }
-
-        private bool WeightLogExists(Guid id)
-        {
-            return (_context.WeightLogs?.Any(e => e.Id == id)).GetValueOrDefault();
+            return Accepted();
         }
     }
 }

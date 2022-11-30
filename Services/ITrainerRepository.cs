@@ -9,4 +9,5 @@ public interface ITrainerRepository: IDisposable
     Task InsertTrainerAsync(Trainer trainer);
     Task DeleteTrainerAsync(Guid id);
     Task UpdateTrainerAsync(Trainer trainer);
+    bool TrainerExists(Guid id);
 }
