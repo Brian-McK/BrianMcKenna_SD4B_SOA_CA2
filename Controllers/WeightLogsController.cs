@@ -40,7 +40,7 @@ namespace BrianMcKenna_SD4B_SOA_CA2.Controllers
                 return NotFound();
             }
             
-            return weightLogList;
+            return Ok(weightLogList);
         }
 
         // GET: api/WeightLogs/5
@@ -54,7 +54,7 @@ namespace BrianMcKenna_SD4B_SOA_CA2.Controllers
                 return NotFound();
             }
             
-            return weightLog;
+            return Ok(weightLog);
         }
 
         // PUT: api/WeightLogs/5
@@ -68,7 +68,7 @@ namespace BrianMcKenna_SD4B_SOA_CA2.Controllers
 
             await _weightLogRepository.UpdateWeightLogAsync(weightLog);
 
-            return NoContent();
+            return Ok();
         }
 
         // POST: api/WeightLogs

@@ -38,7 +38,7 @@ namespace BrianMcKenna_SD4B_SOA_CA2.Controllers
                 return NotFound();
             }
 
-            return trainersList;
+            return Ok(trainersList);
         }
 
         // GET: api/Trainers/5
@@ -52,7 +52,7 @@ namespace BrianMcKenna_SD4B_SOA_CA2.Controllers
                 return NotFound();
             }
             
-            return trainer;
+            return Ok(trainer);
         }
 
         // PUT: api/Trainers/5
@@ -66,7 +66,7 @@ namespace BrianMcKenna_SD4B_SOA_CA2.Controllers
 
             await _trainerRepository.UpdateTrainerAsync(trainer);
 
-            return NoContent();
+            return Ok();
         }
 
         // POST: api/Trainers

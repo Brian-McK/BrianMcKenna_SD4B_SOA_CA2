@@ -38,7 +38,7 @@ namespace BrianMcKenna_SD4B_SOA_CA2.Controllers
                 return NotFound();
             }
 
-            return boxersList;
+            return Ok(boxersList);
         }
 
         // GET: api/Boxers/5
@@ -52,7 +52,7 @@ namespace BrianMcKenna_SD4B_SOA_CA2.Controllers
                 return NotFound();
             }
 
-            return boxer;
+            return Ok(boxer);
         }
 
         // PUT: api/Boxers/5
@@ -66,7 +66,7 @@ namespace BrianMcKenna_SD4B_SOA_CA2.Controllers
 
             await _boxerRepository.UpdateBoxerAsync(boxer);
 
-            return NoContent();
+            return Ok();
         }
 
         // POST: api/Boxers
