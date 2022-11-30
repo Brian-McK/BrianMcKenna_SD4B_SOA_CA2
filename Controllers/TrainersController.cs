@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -16,10 +17,12 @@ namespace BrianMcKenna_SD4B_SOA_CA2.Controllers
     public class TrainersController : ControllerBase
     {
         private readonly ITrainerRepository _trainerRepository;
+        private readonly IMapper _mapper;
 
-        public TrainersController(ITrainerRepository trainerRepository)
+        public TrainersController(ITrainerRepository trainerRepository, IMapper mapper)
         {
             _trainerRepository = trainerRepository;
+            _mapper = mapper;
         }
 
         // GET: api/Trainers

@@ -11,6 +11,7 @@ builder.Services.AddScoped<TrainerRepository>();
 builder.Services.AddScoped<WeightLogRepository>();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddAutoMapper(typeof(Program).Assembly);
 
 var app = builder.Build();
 

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -16,14 +17,14 @@ namespace BrianMcKenna_SD4B_SOA_CA2.Controllers
     public class WeightLogsController : ControllerBase
     {
         private readonly IWeightLogRepository _weightLogRepository;
-        
         private readonly ITrainerRepository _trainerRepository;
+        private readonly IMapper _mapper;
 
-        public WeightLogsController(IWeightLogRepository weightLogRepository, ITrainerRepository trainerRepository)
+        public WeightLogsController(IWeightLogRepository weightLogRepository, ITrainerRepository trainerRepository, IMapper mapper)
         {
             _weightLogRepository = weightLogRepository;
-
             _trainerRepository = trainerRepository;
+            _mapper = mapper;
         }
 
         // GET: api/WeightLogs
