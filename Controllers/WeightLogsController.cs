@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Http;
@@ -17,12 +18,14 @@ namespace BrianMcKenna_SD4B_SOA_CA2.Controllers
     public class WeightLogsController : ControllerBase
     {
         private readonly IWeightLogRepository _weightLogRepository;
+        private readonly IBoxerRepository _boxerRepository;
         private readonly ITrainerRepository _trainerRepository;
         private readonly IMapper _mapper;
 
-        public WeightLogsController(IWeightLogRepository weightLogRepository, ITrainerRepository trainerRepository, IMapper mapper)
+        public WeightLogsController(IWeightLogRepository weightLogRepository, IBoxerRepository boxerRepository, ITrainerRepository trainerRepository, IMapper mapper)
         {
             _weightLogRepository = weightLogRepository;
+            _boxerRepository = boxerRepository;
             _trainerRepository = trainerRepository;
             _mapper = mapper;
         }
@@ -31,14 +34,14 @@ namespace BrianMcKenna_SD4B_SOA_CA2.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<WeightLog>>> GetWeightLogs()
         {
-            var result = await _weightLogRepository.GetAllWeightLogsAsync();
+            var items = await _weightLogRepository.GetAllWeightLogsAsync();
 
-            var weightLogList = result.ToList();
-            
-            if (!weightLogList.Any())
+            if (!items.Any())
             {
                 return NotFound();
             }
+            
+            var weightLogList = _mapper.Map<IEnumerable<WeightLogDto>>(items);
             
             return Ok(weightLogList);
         }
@@ -47,42 +50,50 @@ namespace BrianMcKenna_SD4B_SOA_CA2.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<WeightLog>> GetWeightLog(Guid id)
         {
-            var weightLog = await _weightLogRepository.GetWeightLogByIdAsync(id);
+            var item = await _weightLogRepository.GetWeightLogByIdAsync(id);
 
-            if (weightLog == null)
+            if (item == null)
             {
                 return NotFound();
             }
+            
+            var weightLog = _mapper.Map<WeightLogDto>(item);
             
             return Ok(weightLog);
         }
 
         // PUT: api/WeightLogs/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateWeightLog(Guid id, WeightLog weightLog)
+        public async Task<IActionResult> UpdateWeightLog(Guid id, WeightLogForUpdatingDto weightLogForUpdating)
         {
-            if (id != weightLog.Id)
+            if (!(_weightLogRepository).WeightLogExists(id))
             {
                 return BadRequest();
             }
+            
+            var weightLogEntity = _mapper.Map<WeightLog>(weightLogForUpdating);
 
-            await _weightLogRepository.UpdateWeightLogAsync(weightLog);
+            weightLogEntity.Id = id;
 
-            return Ok();
+            await _weightLogRepository.UpdateWeightLogAsync(weightLogEntity);
+
+            return Ok(weightLogForUpdating);
         }
 
         // POST: api/WeightLogs
         [HttpPost]
-        public async Task<ActionResult<WeightLog>> PostWeightLog(WeightLog weightLog)
+        public async Task<ActionResult<WeightLog>> PostWeightLog(WeightLogForCreatingDto weightLogForCreating)
         {
-            if ((!_weightLogRepository.WeightLogExists(weightLog.Id)) || (!_trainerRepository.TrainerExists(weightLog.VerifiedByTrainerId)))
+            if ((!_boxerRepository.BoxerExists(weightLogForCreating.BoxerId)) || (!_trainerRepository.TrainerExists(weightLogForCreating.VerifiedByTrainerId)))
             {
-                return NotFound();
+                return BadRequest();
             }
             
-            await _weightLogRepository.InsertWeightLogAsync(weightLog);
+            var weightLogEntity = _mapper.Map<WeightLog>(weightLogForCreating);
+            
+            await _weightLogRepository.InsertWeightLogAsync(weightLogEntity);
 
-            return CreatedAtAction(nameof(GetWeightLog), new { id = weightLog.Id }, weightLog);
+            return CreatedAtAction(nameof(GetWeightLog), new { id = weightLogEntity.Id }, weightLogEntity);
         }
 
         // DELETE: api/WeightLogs/5
@@ -91,7 +102,7 @@ namespace BrianMcKenna_SD4B_SOA_CA2.Controllers
         {
             await _weightLogRepository.DeleteWeightLogAsync(id);
 
-            return Accepted();
+            return NoContent();
         }
     }
 }

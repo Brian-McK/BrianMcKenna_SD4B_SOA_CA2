@@ -37,6 +37,8 @@ public class WeightLogRepository: IWeightLogRepository, IDisposable
         var weightLog = await _boxingClubContext.WeightLogs.FindAsync(id);
 
         if (weightLog != null) _boxingClubContext.WeightLogs.Remove(weightLog);
+        
+        await SaveAsync();
     }
     
     public async Task UpdateWeightLogAsync(WeightLog weightLog)
