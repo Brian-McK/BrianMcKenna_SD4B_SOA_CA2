@@ -77,9 +77,9 @@ namespace BrianMcKenna_SD4B_SOA_CA2.Controllers
 
         // POST: api/Boxers
         [HttpPost]
-        public async Task<ActionResult<Boxer>> PostBoxer(BoxerForUpdatingDto boxerForUpdating)
+        public async Task<ActionResult<Boxer>> PostBoxer(BoxerForCreatingDto boxerForCreating)
         {
-            var boxerEntity = _mapper.Map<Boxer>(boxerForUpdating);
+            var boxerEntity = _mapper.Map<Boxer>(boxerForCreating);
             
             await _boxerRepository.InsertBoxerAsync(boxerEntity);
 
@@ -90,11 +90,6 @@ namespace BrianMcKenna_SD4B_SOA_CA2.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteBoxer(Guid id)
         {
-            if (!_boxerRepository.BoxerExists(id))
-            {
-                return NotFound();
-            }
-            
             await _boxerRepository.DeleteBoxerAsync(id);
 
             return NoContent();

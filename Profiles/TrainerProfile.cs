@@ -8,8 +8,32 @@ public class TrainerProfile: Profile
 {
     public TrainerProfile()
     {
-        CreateMap<Trainer, TrainerDto>().ForMember(
-            dest => dest.FullName,
-            opt => opt.MapFrom(src => $"{src.FirstName} {src.Surname}"));
+        CreateMap<Trainer, TrainerDto>()
+            .ForMember(
+                dest => dest.FullName,
+                opt => opt.MapFrom(src => $"{src.FirstName} {src.Surname}"))
+            .ForMember(dest => dest.Dob,
+                opt =>opt.MapFrom(src =>
+                    $"{src.DateOfBirth:dd/MM/yyyy}"));
+        
+        CreateMap<Trainer, TrainerForUpdatingDto>().ForMember(
+            dest => dest.Dob,
+            opt => opt.MapFrom(src => $"{src.DateOfBirth:dd/MM/yyyy}"));
+        
+        CreateMap<TrainerForUpdatingDto, Trainer>().ForMember(
+            dest => dest.DateOfBirth,
+            opt => opt.MapFrom(src => 
+                $"{ConvertDateStringToDateTime(src.Dob)}"));
+        
+        CreateMap<TrainerForUpdatingDto, TrainerForCreatingDto>();
+    }
+    
+    private static DateTime? ConvertDateStringToDateTime(string? dateStr)
+    {
+        if (dateStr == null) return null;
+
+        var date = DateTime.ParseExact(dateStr, "dd/MM/yyyy", null);
+
+        return date;
     }
 }

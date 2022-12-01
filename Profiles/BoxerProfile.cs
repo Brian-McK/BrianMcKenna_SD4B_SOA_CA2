@@ -25,6 +25,7 @@ public class BoxerProfile: Profile
             opt => opt.MapFrom(src => 
                 $"{ConvertDateStringToDateTime(src.Dob)}"));
         
+        CreateMap<BoxerForUpdatingDto, BoxerForCreatingDto>();
     }
 
     private static DateTime? ConvertDateStringToDateTime(string? dateStr)

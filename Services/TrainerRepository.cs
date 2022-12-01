@@ -37,6 +37,8 @@ public class TrainerRepository: ITrainerRepository, IDisposable
         var trainer = await _boxingClubContext.Trainers.FindAsync(id);
 
         if (trainer != null) _boxingClubContext.Trainers.Remove(trainer);
+        
+        await SaveAsync();
     }
     
     public async Task UpdateTrainerAsync(Trainer trainer)

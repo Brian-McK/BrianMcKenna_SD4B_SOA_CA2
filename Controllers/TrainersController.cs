@@ -29,14 +29,14 @@ namespace BrianMcKenna_SD4B_SOA_CA2.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Trainer>>> GetTrainers()
         { 
-            var result = await _trainerRepository.GetAllTrainersAsync();
+            var items = await _trainerRepository.GetAllTrainersAsync();
 
-            var trainersList = result.ToList();
-            
-            if (!trainersList.Any())
+            if (!items.Any())
             {
                 return NotFound();
             }
+            
+            var trainersList = _mapper.Map<IEnumerable<TrainerDto>>(items);
 
             return Ok(trainersList);
         }
@@ -45,37 +45,45 @@ namespace BrianMcKenna_SD4B_SOA_CA2.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Trainer>> GetTrainer(Guid id)
         {
-            var trainer = await _trainerRepository.GetTrainerByIdAsync(id);
+            var item = await _trainerRepository.GetTrainerByIdAsync(id);
 
-            if (trainer == null)
+            if (item == null)
             {
                 return NotFound();
             }
             
+            var trainer = _mapper.Map<TrainerDto>(item);
+
             return Ok(trainer);
         }
 
         // PUT: api/Trainers/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateTrainer(Guid id, Trainer trainer)
+        public async Task<IActionResult> UpdateTrainer(Guid id, TrainerForUpdatingDto trainerForUpdating)
         {
-            if (id != trainer.Id)
+            if (!(_trainerRepository).TrainerExists(id))
             {
                 return BadRequest();
             }
+            
+            var trainerEntity = _mapper.Map<Trainer>(trainerForUpdating);
 
-            await _trainerRepository.UpdateTrainerAsync(trainer);
+            trainerEntity.Id = id;
 
-            return Ok();
+            await _trainerRepository.UpdateTrainerAsync(trainerEntity);
+
+            return Ok(trainerForUpdating);
         }
 
         // POST: api/Trainers
         [HttpPost]
-        public async Task<ActionResult<Trainer>> PostTrainer(Trainer trainer)
+        public async Task<ActionResult<Trainer>> PostTrainer(TrainerForCreatingDto trainerForCreating)
         {
-            await _trainerRepository.InsertTrainerAsync(trainer);
+            var trainerEntity = _mapper.Map<Trainer>(trainerForCreating);
+            
+            await _trainerRepository.InsertTrainerAsync(trainerEntity);
 
-            return CreatedAtAction(nameof(GetTrainer), new { id = trainer.Id }, trainer);
+            return CreatedAtAction(nameof(GetTrainer), new { id = trainerEntity.Id }, trainerEntity);
         }
 
         // DELETE: api/Trainers/5
@@ -84,7 +92,7 @@ namespace BrianMcKenna_SD4B_SOA_CA2.Controllers
         {
             await _trainerRepository.DeleteTrainerAsync(id);
 
-            return Accepted();
+            return NoContent();
         }
     }
 }
