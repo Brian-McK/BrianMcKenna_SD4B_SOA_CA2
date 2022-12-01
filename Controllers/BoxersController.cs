@@ -29,14 +29,14 @@ namespace BrianMcKenna_SD4B_SOA_CA2.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Boxer>>> GetBoxers()
         {
-            var result = await _boxerRepository.GetAllBoxersAsync();
+            var items = await _boxerRepository.GetAllBoxersAsync();
 
-            var boxersList = result.ToList();
-            
-            if (!boxersList.Any())
+            if (!items.Any())
             {
                 return NotFound();
             }
+            
+            var boxersList = _mapper.Map<IEnumerable<BoxerDto>>(items);
 
             return Ok(boxersList);
         }
@@ -45,46 +45,59 @@ namespace BrianMcKenna_SD4B_SOA_CA2.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Boxer>> GetBoxer(Guid id)
         {
-            var boxer = await _boxerRepository.GetBoxerByIdAsync(id);
+            var item = await _boxerRepository.GetBoxerByIdAsync(id);
 
-            if (boxer == null)
+            if (item == null)
             {
                 return NotFound();
             }
+            
+            var boxer = _mapper.Map<BoxerDto>(item);
 
             return Ok(boxer);
         }
 
         // PUT: api/Boxers/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateBoxer(Guid id, Boxer boxer)
+        public async Task<IActionResult> UpdateBoxer(Guid id, BoxerForUpdatingDto boxerForUpdating)
         {
-            if (id != boxer.Id)
+            if (!_boxerRepository.BoxerExists(id))
             {
                 return BadRequest();
             }
+            
+            var boxerEntity = _mapper.Map<Boxer>(boxerForUpdating);
 
-            await _boxerRepository.UpdateBoxerAsync(boxer);
+            boxerEntity.Id = id;
 
-            return Ok();
+            await _boxerRepository.UpdateBoxerAsync(boxerEntity);
+
+            return Ok(boxerForUpdating);
         }
 
         // POST: api/Boxers
         [HttpPost]
-        public async Task<ActionResult<Boxer>> PostBoxer(Boxer boxer)
+        public async Task<ActionResult<Boxer>> PostBoxer(BoxerForUpdatingDto boxerForUpdating)
         {
-            await _boxerRepository.InsertBoxerAsync(boxer);
+            var boxerEntity = _mapper.Map<Boxer>(boxerForUpdating);
+            
+            await _boxerRepository.InsertBoxerAsync(boxerEntity);
 
-            return CreatedAtAction(nameof(GetBoxer), new { id = boxer.Id }, boxer);
+            return CreatedAtAction(nameof(GetBoxer), new { id = boxerEntity.Id }, boxerEntity);
         }
 
         // DELETE: api/Boxers/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteBoxer(Guid id)
         {
+            if (!_boxerRepository.BoxerExists(id))
+            {
+                return NotFound();
+            }
+            
             await _boxerRepository.DeleteBoxerAsync(id);
 
-            return Accepted();
+            return NoContent();
         }
     }
 }

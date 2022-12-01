@@ -8,4 +8,5 @@ public interface IBoxerRepository: IDisposable
     Task InsertBoxerAsync(Boxer boxer);
     Task DeleteBoxerAsync(Guid id);
     Task UpdateBoxerAsync(Boxer boxer);
+    bool BoxerExists(Guid id);
 }

@@ -84,7 +84,7 @@ public class BoxerRepository: IBoxerRepository, IDisposable
         GC.SuppressFinalize(this);
     }
     
-    private bool BoxerExists(Guid id)
+    public bool BoxerExists(Guid id)
     {
         return (_boxingClubContext.Boxers?.Any(e => e.Id == id)).GetValueOrDefault();
     }
