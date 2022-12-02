@@ -9,7 +9,7 @@ builder.Services.AddCors(options =>
     options.AddDefaultPolicy(
         policy =>
         {
-            policy.WithOrigins("https://www.boxingclubweighttrackerapi.azurewebsites.net");
+            policy.WithOrigins("https://www.boxingclubweighttrackerapi.azurewebsites.net").AllowAnyHeader().AllowAnyMethod().AllowCredentials();
         });
 });
 
