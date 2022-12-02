@@ -15,10 +15,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddAutoMapper(typeof(Program).Assembly);
 
-builder.Services.AddCors(p => p.AddPolicy("corsapp", builder =>
-{
-  builder.WithOrigins("*").AllowAnyMethod().AllowAnyHeader();
-}));
+builder.Services.AddCors();
 
 var app = builder.Build();
 
@@ -29,7 +26,7 @@ var app = builder.Build();
       c.SwaggerEndpoint("/swagger/v1/swagger.json", "Boxing Club Weight Tracker API");
     });
 
-app.UseCors("corsapp");
+app.UseCors(x => x.AllowAnyHeader().AllowAnyMethod().WithOrigins("localhost:3000"));
 
 app.UseHttpsRedirection();
 
