@@ -26,7 +26,10 @@ if (app.Environment.IsDevelopment())
 {
     // app.UseDeveloperExceptionPage();
     app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwaggerUI(c =>
+    {
+      c.SwaggerEndpoint("/swagger/v1/swagger.json", "Boxing Club Weight Tracker API");
+    });
 }
 
 app.UseCors("corsapp");
